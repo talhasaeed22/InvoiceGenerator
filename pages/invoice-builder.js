@@ -287,6 +287,8 @@ const Home = () => {
     setSubTotal(0)
     setTotalTax(0)
     setTotal(0)
+    setShowSender(false);
+    setShowRecipient(false);
   }
 
   return (

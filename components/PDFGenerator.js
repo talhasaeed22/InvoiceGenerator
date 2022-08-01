@@ -27,8 +27,8 @@ const PDFGenerator = (props) => {
     var add = false;
     if (props.items.length === 0 && (props.item.item_name === '' || props.item.item_qty === '' || props.item_rate === '')) {
       setMessage("Please fill the required fields");
-        props.setItemBorder();
-        setError(true);
+      props.setItemBorder();
+      setError(true);
     } else {
 
       console.log(props.item.item_name !== '' && props.item.item_qty !== '' && props.item_rate !== '')
@@ -46,15 +46,15 @@ const PDFGenerator = (props) => {
         print(add);
       }
 
-       else {
+      else {
         print();
       }
     }
 
-    
+
   };
 
-  const print = (add)=>{
+  const print = (add) => {
     if (
       props.sender.name === ""
 
@@ -66,7 +66,7 @@ const PDFGenerator = (props) => {
     ) {
       setMessage("Please Enter Recipient Comapny Name");
       setError(true);
-    }else{
+    } else {
 
       var pdf = new jsPDF("portrait", "px", "a4", "false");
       pdf.setFontSize(14);
@@ -101,76 +101,121 @@ const PDFGenerator = (props) => {
       // pdf.setFont('Times-Bold')
       pdf.setFontSize(10);
       pdf.text(350, 225, props.invoice.dueDate);
-  
+
       //To And From Section
       pdf.setFontSize(13);
-      pdf.text(40, 150, "From").setFontSize(13);
-  
-      pdf.text(40, 170, props.sender.name).setFontSize(10);
-      pdf.text(40, 180, props.sender.fname + "" + props.sender.lname);
-      pdf.text(40, 190, props.sender.address);
-      pdf.text(40, 200, props.sender.address2);
-      pdf.text(40, 210, props.sender.country);
-  
-      pdf.text(40, 220, props.sender.Email);
-      pdf.text(40, 230, props.sender.Phone);
-      pdf.text(40, 240, props.sender.Website);
-  
-      if (props.sender.tax !== '') {
-        pdf.text(40, 260, props.sender.tax);
+      let senderY = 150;
+      pdf.text(40, senderY, "From").setFontSize(13);
+      senderY += 20
+
+      pdf.text(40, senderY, props.sender.name).setFontSize(10);
+      senderY+=10;
+      if(props.sender.fname !== '' || props.sender.lname !== ''){
+        pdf.text(40, senderY, props.sender.fname + "" + props.sender.lname);
+        senderY+=10;
       }
-  
+      if(props.sender.address !== ''){
+        pdf.text(40, senderY, props.sender.address);
+        senderY+=10;
+      }
+      if(props.sender.address2 !==''){
+        pdf.text(40, senderY, props.sender.address2);
+        senderY+=10;
+      }
+      if(props.sender.country !== ''){
+        pdf.text(40, senderY, props.sender.country);
+        senderY+=10
+      }
+      if(props.sender.Email !==''){
+        pdf.text(40, senderY, props.sender.Email);
+        senderY+=10
+      }
+      if(props.sender.Phone !== ''){
+        pdf.text(40, senderY, props.sender.Phone);
+        senderY+=10
+      }
+      if(props.sender.Website !==''){
+        pdf.text(40, senderY, props.sender.Website);
+        senderY+=10
+      }
+      if (props.sender.tax !== '') {
+        pdf.text(40, senderY+=10, "Tax Registration Number");
+        senderY+=10
+        pdf.text(40, senderY+=10, props.sender.tax);
+        senderY+=10
+      }
+
       pdf.setFontSize(13);
-      pdf.text(200, 150, "To");
-      pdf.text(200, 170, props.recipient.Cname).setFontSize(10);
-      pdf
-        .text(200, 180, props.recipient.Cfname + "" + props.recipient.Clname)
-        .setFontSize(10);
-      pdf.text(200, 190, props.recipient.Caddress);
-      pdf.text(200, 200, props.recipient.Caddress2);
-      pdf.text(200, 210, props.recipient.Ccountry);
-      pdf.text(200, 220, props.recipient.extra);
-  
-      pdf.text(200, 230, props.recipient.CEmail);
-  
-  
-  
+      let recipientY = 150;
+      pdf.text(200, recipientY, "To");
+      recipientY+=20;
+      pdf.text(200, recipientY, props.recipient.Cname).setFontSize(10);
+      recipientY+=10;
+      if(props.recipient.Cfname !=='' || props.recipient.Clname !==''){
+        pdf.text(200, recipientY, props.recipient.Cfname + "" + props.recipient.Clname).setFontSize(10);
+        recipientY+=10;
+      }
+      if(props.recipient.Caddress !==''){
+        pdf.text(200, recipientY, props.recipient.Caddress);
+        recipientY+=10;
+      }
+      if(props.recipient.Caddress2 !==''){
+        pdf.text(200, recipientY, props.recipient.Caddress2);
+        recipientY+=10;
+      }
+      if(props.recipient.Ccountry !==''){
+        pdf.text(200, recipientY, props.recipient.Ccountry);
+        recipientY+=10
+      }
+      if(props.recipient.extra !==''){
+        pdf.text(200, recipientY, props.recipient.extra);
+        recipientY+=10
+      }
+
+      if(props.recipient.CEmail!==''){
+        pdf.text(200, recipientY, props.recipient.CEmail);
+        recipientY+=10;
+      }
+
+
+
       const newList = props.items.slice();
-      if(add){
+      if (add) {
         newList.push(props.item)
       }
       const newArray = newList.map(({ id, item_total, ...rest }) => {
         return rest;
       });
-      
-      
-        
-      
-      console.log(newArray)
-      
+
       const newItems = newArray.slice();
-      
+
       for (let index = 0; index < newItems.length; index++) {
         const element = newItems[index];
         newItems[index].item_total =
           parseInt(element.item_qty) * parseInt(element.item_rate);
       }
-  
+      var index;
+      if(recipientY > senderY){
+        index = recipientY
+        index = index + 50;
+      }else{
+        index = senderY
+        index = index + 50;
+      }
       const values = newItems.map((e) => Object.values(e));
       pdf.autoTable({
         head: [["Item", "HRS/QTY", "Rate", "TAX(%)", "Description", "SUBTOTAL"]],
         body: values,
-        startY: 300,
+        startY: index,
         styles: { fillColor: "#a8a4a3" },
       });
-  
-      var index = 300;
+
       for (let i = 0; i < newItems.length; i++) {
         index += 70;
       }
-  
-  
-  
+
+
+
       if (index >= pdf.internal.pageSize.height) {
         pdf.addPage();
         index = 0;
@@ -181,7 +226,7 @@ const PDFGenerator = (props) => {
       }
       pdf.text(300, index, "Invoice Summary");
       pdf.setFontSize(9);
-  
+
       index = index + 15;
       if (props.notes.notes) {
         pdf.text(40, index, props.notes.notes);
@@ -192,25 +237,25 @@ const PDFGenerator = (props) => {
         index,
         formatter(props.subTotal).toString()
       );
-  
+
       index = index + 15;
-  
+
       pdf.text(300, index, `Tax (${props.invoice.currency})`);
       pdf.text(
         360,
         index,
         formatter(props.totalTax).toString()
       );
-  
+
       index = index + 15;
-  
+
       pdf.text(300, index, `Total (${props.invoice.currency})`);
       pdf.text(
         360,
         index,
         formatter(props.total).toString()
       );
-  
+
       pdf.save("invoice" + Date.now() + ".pdf");
     }
   }
